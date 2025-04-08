@@ -1,30 +1,30 @@
 schema: '2.0'
 stages:
   prepare:
-    cmd: python src/create_features.py
+    cmd: python src/preprocessing.py
     deps:
-    - path: data/adult.data
+    - path: data/test.csv
       hash: md5
-      md5: 5d7c39d7b8804f071cdd1f2a7c460872
-      size: 3974305
-    - path: data/adult.test
+      md5: c2a43c42855b51d097c8584395b07812
+      size: 1350
+    - path: data/train.csv
       hash: md5
-      md5: 366c746021dc50ad9d933d2817612fc9
-      size: 2003132
-    - path: src/create_features.py
+      md5: c45657de8309246ed5e927ddb106aace
+      size: 336555
+    - path: src/preprocessing.py
       hash: md5
-      md5: b93aea27ba45f8b24bdd52928f1f2b99
-      size: 2564
+      md5: b79ed21c1d7225df5c21660020b01aea
+      size: 1732
     outs:
     - path: data/pipeline.pkl
       hash: md5
-      md5: 2ff2f4415c961f1b4220d6b141e5f6f1
-      size: 6072
+      md5: 1937547c55653c6d6f879e6adf7d1bce
+      size: 4546
     - path: data/processed_test_data.csv
       hash: md5
-      md5: a59c8daac38fe1ca84dda2b458ee762a
-      size: 5409602
+      md5: 483ed22b2dcb2f6b780ed1123e7fa95f
+      size: 138563
     - path: data/processed_train_data.csv
       hash: md5
-      md5: adf63b6ce20f7ee74f63d5dabb325226
-      size: 10829967
+      md5: 208beeba78c04a8a3ef02e84cdfaa3f0
+      size: 552123
