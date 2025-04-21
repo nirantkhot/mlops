@@ -8,49 +8,35 @@ from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
-df = pd.read_csv('data/train.csv')
-df = df.drop(columns='Id')
-df_y = df['Class']
-df = df.drop(columns='Class')
+def load_data(df_path):
+    # Load data
+    df = pd.read_csv(df_path)
+    return df
 
-train_X, test_X, train_y, test_y = train_test_split(df, df_y, test_size=0.2, random_state=42)
+def prepare_data(df, impute_strategy='median'): 
+    df = df.drop(columns='Id')
+    df_y = df['Class']
+    df = df.drop(columns='Class')
 
-# Create pipeline for imputing and scaling numeric variables
-# one-hot encoding categorical variables, and select features based on chi-squared value
-numeric_transformer = Pipeline(
-    steps=[("imputer", SimpleImputer(strategy="median")), ("scaler", StandardScaler())]
-)
+    train_X, test_X, train_y, test_y = train_test_split(df, df_y, test_size=0.2, random_state=42)
 
-categorical_transformer = Pipeline(
-    steps=[
-        ("encoder", OneHotEncoder(handle_unknown="ignore"))
-    ]
-)
-preprocessor = ColumnTransformer(
-    transformers=[
-        ("num", numeric_transformer, make_column_selector(dtype_include = ['int', 'float'])),
-        ("cat", categorical_transformer, make_column_selector(dtype_exclude = ['int', 'float'])),
-    ]
-)
+    numeric_cols = train_X.select_dtypes(include=['int', 'float']).columns
 
-clf = Pipeline(
-    steps=[("preprocessor", preprocessor)]
-)
+    num_imputer = SimpleImputer(strategy='median')
+    train_num_imputed = pd.DataFrame(num_imputer.fit_transform(train_X[numeric_cols]), columns=numeric_cols)
+    test_num_imputed = pd.DataFrame(num_imputer.transform(test_X[numeric_cols]), columns=numeric_cols)
 
-# Create new train and test data using the pipeline
-clf.fit(train_X, train_y)
-train_new = clf.transform(train_X)
-test_new = clf.transform(test_X)
+    scaler = StandardScaler()
+    train_num_scaled = pd.DataFrame(scaler.fit_transform(train_num_imputed), columns=numeric_cols)
+    test_num_scaled = pd.DataFrame(scaler.transform(test_num_imputed), columns=numeric_cols)
 
-# Transform to dataframe and save as a csv
-train_new = pd.DataFrame(train_new)
-test_new = pd.DataFrame(test_new)
-train_new['y'] = train_y
-test_new['y'] = test_y
+    return train_num_scaled, test_num_scaled, train_y, test_y
 
-train_new.to_csv('data/processed_train_data.csv')
-test_new.to_csv('data/processed_test_data.csv')
 
-# Save pipeline
-with open('data/pipeline.pkl','wb') as f:
-    pickle.dump(clf,f)
+def save_data(train_new, test_new, train_name, test_name):
+    train_new.to_csv(train_name)
+    test_new.to_csv(test_name)
+
+if __name__=="__main__":
+    df = load_data('../data/train.csv')
+    X_train, X_test, y_train, y_test = prepare_data(df)
