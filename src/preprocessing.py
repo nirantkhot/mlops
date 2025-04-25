@@ -1,10 +1,5 @@
 import pandas as pd
-import numpy as np 
-import pickle
-import yaml
-from sklearn.preprocessing import StandardScaler, OneHotEncoder
-from sklearn.compose import ColumnTransformer, make_column_selector
-from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import train_test_split
 
